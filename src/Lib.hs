@@ -4,13 +4,16 @@
 
 module Lib
     ( moveFoward
+    , apply
     , Pos
+    , parseExpr
+    , displacement
+    , expr2Func
     ) where
 
 import Control.Applicative
 import Data.Char
 import qualified Data.Map.Strict as M
-import Text.ParserCombinators.ReadP (many1)
 
 -- 方針
 -- A : A + A - - A + Aの形で辞書型を作る
@@ -37,6 +40,11 @@ moveFoward acc angle cxy = (x', y')
         x = cos t * fst foward
         y = sin t * fst foward
         (x', y') = (x, y) `addPos` cxy
+
+apply :: [Float -> Pos -> Pos] -> Float -> Pos -> [Pos]
+apply fs angle initial = scanl (\pos f -> f pos) initial fs'
+    where
+        fs' = map (\f -> f angle) fs
 
 -- "A+A"のような文字列を置換する
 -- 例 コッホ曲線
