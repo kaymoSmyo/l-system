@@ -140,11 +140,6 @@ item = P (
         (x:xs) -> [(x, xs)]
     )
 
-three :: Parser (Char, Char)
-three = g <$> item <*> item <*> item
-    where
-        g x y z = (x, z)
-
 sat :: (Char -> Bool) -> Parser Char
 sat predicate = do
     x <- item
@@ -153,52 +148,11 @@ sat predicate = do
     else
         empty
 
-digit :: Parser Char
-digit = sat isDigit
-
-lower :: Parser Char
-lower = sat isLower
-
-upper :: Parser Char
-upper = sat isUpper
-
-letter :: Parser Char
-letter = sat isAlpha
-
-alphanum :: Parser Char
-alphanum = sat isAlphaNum
-
 char :: Char -> Parser Char
 char x = sat (==x)
 
-
-string :: String -> Parser String
-string [] = return []
-string (x:xs) = char x >> string xs >> pure (x:xs)
-
-ident :: Parser String
-ident = do
-    -- x <- lower
-    x <- some lower
-    xs <- many alphanum
-    return (x ++ xs)
-
-nat :: Parser Int
-nat = do
-    xs <- some digit
-    return (read xs)
-
 space :: Parser ()
 space = many (sat isSpace) >> return ()
-
-int :: Parser Int
-int = do
-    _ <- char '-'
-    n <- nat
-    return (-n)
-    <|>
-    nat
-
 
 token :: Parser a -> Parser a
 token p = do
@@ -207,19 +161,8 @@ token p = do
     space
     return v
 
-identifier :: Parser String
-identifier = token ident
-
 alphabet :: Parser Char
 alphabet = token (sat isAlpha)
+
 symbolChar :: Char -> Parser Char
 symbolChar c = token (char c)
-
-interger :: Parser Int
-interger = token int
-
-symbol :: String -> Parser String
-symbol xs = token (string xs)
-
-natural :: Parser Int
-natural = token int
