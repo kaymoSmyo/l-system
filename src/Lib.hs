@@ -5,11 +5,11 @@
 module Lib
     ( moveFoward
     , apply
-    , Pos
     , parseExpr
-    , displacement
+    , nDisplacement
     , getSousa
     , DisplaceRule
+    , Pos
     ) where
 
 import Control.Applicative
@@ -76,23 +76,29 @@ parseExpr ss = s : parseExpr out
 type DisplaceRule = M.Map Char String
 displacement :: DisplaceRule -> Expr -> Expr
 displacement _ [] = []
-displacement dr (s:ss) = case M.lookup s dr of
-    Just t -> t ++ displacement dr ss
-    Nothing -> s : displacement dr ss
+displacement dr (e:es) = case M.lookup e dr of
+    Just t -> t ++ displacement dr es
+    Nothing -> e : displacement dr es
 
-getSousa :: Expr -> [Float -> Pos -> Pos]
-getSousa e = expr2Func e 0
+-- 任意回数の置換
+nDisplacement :: DisplaceRule -> Int -> Expr -> Expr
+nDisplacement _ 0 es = es
+nDisplacement dr n es = nDisplacement dr (n-1) (displacement dr es)
 
 -- 関数への変換
-expr2Func :: Expr -> Int -> [Float -> Pos -> Pos]
-expr2Func [] _ = []
-expr2Func (s:ss) acc =
-    let (newacc, lf)
-            | s == '+' = (acc+1, [])
-            | s == '-' = (acc-1, [])
-            | isAlpha s = (acc, [moveFoward acc])
-            | otherwise = error "不正な文字種が入力されました"
-    in lf ++ expr2Func ss newacc
+getSousa :: Expr -> [Float -> Pos -> Pos]
+getSousa e = expr2Func e 0
+    where
+        expr2Func :: Expr -> Int -> [Float -> Pos -> Pos]
+        expr2Func [] _ = []
+        expr2Func (s:ss) acc =
+            let (newacc, lf)
+                    | s == '+' = (acc+1, [])
+                    | s == '-' = (acc-1, [])
+                    | isAlpha s = (acc, [moveFoward acc])
+                    | otherwise = error "不正な文字種が入力されました"
+            in lf ++ expr2Func ss newacc
+        
 
 newtype Parser a = P (String -> [(a, String)])
 
