@@ -8,7 +8,8 @@ module Lib
     , Pos
     , parseExpr
     , displacement
-    , expr2Func
+    , getSousa
+    , DisplaceRule
     ) where
 
 import Control.Applicative
@@ -28,7 +29,7 @@ addPos :: Pos -> Pos -> Pos
 
 -- 前進の移動量は1とする
 foward :: Pos
-foward = (1, 0)
+foward = (100, 0)
 
 -- 回転量は acc * thetaで表すことができる
 -- accはパースするときに、+がでたら+1、-がでたら-1する
@@ -78,6 +79,9 @@ displacement _ [] = []
 displacement dr (s:ss) = case M.lookup s dr of
     Just t -> t ++ displacement dr ss
     Nothing -> s : displacement dr ss
+
+getSousa :: Expr -> [Float -> Pos -> Pos]
+getSousa e = expr2Func e 0
 
 -- 関数への変換
 expr2Func :: Expr -> Int -> [Float -> Pos -> Pos]
