@@ -1,5 +1,6 @@
 module Lib
-    ( someFunc
+    ( moveFoward
+    , Pos
     ) where
 
 -- 方針
@@ -9,10 +10,6 @@ module Lib
 -- | ないなら、そのまま
 -- 文字列を関数の連続へとパースする
 type Pos = (Float, Float)
-
--- 回転の角度を決める
-theta :: Float
-theta = pi/2
 
 addPos :: Pos -> Pos -> Pos
 (x, y) `addPos` (a, b) = (x + a, y + b)
@@ -31,28 +28,3 @@ moveFoward acc angle cxy = (x', y')
         x = cos t * fst foward
         y = sin t * fst foward 
         (x', y') = (x, y) `addPos` cxy
-
-
--- 式をパースするときは最終的にこのリストを返す
--- koch :: [Pos -> Pos]
-sousa :: Float -> [Pos -> Pos]
-sousa angle = map (\f -> f angle)
-    [
-    moveFoward 0
-    , moveFoward 1
-    , moveFoward (-1)
-    , moveFoward 0
-    ]
-
-apply :: [Pos -> Pos] -> Pos -> [Pos]
-apply [] _ = []
-apply (f:fs) xy = nxy : apply fs nxy 
-    where
-        nxy = f xy
-
-kochresult :: [(Float, Float)]
-kochresult = (0, 0) : apply (sousa theta) (0, 0)
-
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
