@@ -10,6 +10,7 @@ module Lib
 import Control.Applicative
 import Data.Char
 import qualified Data.Map.Strict as M
+import Text.ParserCombinators.ReadP (many1)
 
 -- 方針
 -- A : A + A - - A + Aの形で辞書型を作る
@@ -46,20 +47,28 @@ moveFoward acc angle cxy = (x', y')
 -- A を一回置換し、A + A - - A + A として実行
 
 -- 手順
--- 空白の除去とパース |> 置換方法と式の取得 |> 関数への変換
+-- 置換と式の空白の除去 |> 置換方法と式の取得 |> 関数への変換
 
 -- "A+A"
-type Expr = [String]
+type Expr = [Char]
 
 -- パース
--- +/-が出てくるまでが一つの変数とする
+-- 変数はアルファベット一文字であると変更
+expr :: Parser Char
+expr = symbolChar '+' <|> symbolChar '-' <|> alphabet
+
+parseExpr :: String -> Expr
+parseExpr [] = []
+parseExpr ss = s : parseExpr out
+    where
+        (s, out) = head $ parse expr ss
 
 -- 置換方法は辞書型に入れる
-type DisplaceRule = M.Map String String
+type DisplaceRule = M.Map Char String
 displacement :: DisplaceRule -> Expr -> Expr
 displacement _ [] = []
 displacement dr (s:ss) = case M.lookup s dr of
-    Just t -> t : displacement dr ss
+    Just t -> t ++ displacement dr ss
     Nothing -> s : displacement dr ss
 
 -- 関数への変換
@@ -67,9 +76,10 @@ expr2Func :: Expr -> Int -> [Float -> Pos -> Pos]
 expr2Func [] _ = []
 expr2Func (s:ss) acc =
     let newacc
-            | s == "+" = acc+1
-            | s == "-" = acc-1
-            | otherwise = acc
+            | s == '+' = acc+1
+            | s == '-' = acc-1
+            | isAlpha s = acc
+            | otherwise = error "不正な文字種が入力されました"
     in moveFoward newacc : expr2Func ss newacc
 
 newtype Parser a = P (String -> [(a, String)])
@@ -192,6 +202,10 @@ token p = do
 identifier :: Parser String
 identifier = token ident
 
+alphabet :: Parser Char
+alphabet = token (sat isAlpha)
+symbolChar :: Char -> Parser Char
+symbolChar c = token (char c)
 
 interger :: Parser Int
 interger = token int
