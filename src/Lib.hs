@@ -87,12 +87,12 @@ getSousa e = expr2Func e 0
 expr2Func :: Expr -> Int -> [Float -> Pos -> Pos]
 expr2Func [] _ = []
 expr2Func (s:ss) acc =
-    let newacc
-            | s == '+' = acc+1
-            | s == '-' = acc-1
-            | isAlpha s = acc
+    let (newacc, lf)
+            | s == '+' = (acc+1, [])
+            | s == '-' = (acc-1, [])
+            | isAlpha s = (acc, [moveFoward acc])
             | otherwise = error "不正な文字種が入力されました"
-    in moveFoward newacc : expr2Func ss newacc
+    in lf ++ expr2Func ss newacc
 
 newtype Parser a = P (String -> [(a, String)])
 
