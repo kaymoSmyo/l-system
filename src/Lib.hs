@@ -12,7 +12,7 @@ type Pos = (Float, Float)
 
 -- 回転の角度を決める
 theta :: Float
-theta = pi / 3
+theta = pi/2
 
 addPos :: Pos -> Pos -> Pos
 (x, y) `addPos` (a, b) = (x + a, y + b)
@@ -24,13 +24,25 @@ foward = (1, 0)
 -- 回転量は acc * thetaで表すことができる
 -- accはパースするときに、+がでたら+1、-がでたら-1する
 -- (1,0)のベクトルを回転させ、今いるベクトルの終点に移動させることで、次のベクトルの終点の座標を得る
-moveFoward :: Int -> Pos -> Pos
-moveFoward acc cxy = (x', y')
+moveFoward :: Int -> Float -> Pos -> Pos
+moveFoward acc angle cxy = (x', y')
     where
-        t = theta * fromIntegral acc
+        t = angle * fromIntegral acc
         x = cos t * fst foward
         y = sin t * fst foward 
         (x', y') = (x, y) `addPos` cxy
+
+
+-- 式をパースするときは最終的にこのリストを返す
+-- koch :: [Pos -> Pos]
+sousa :: Float -> [Pos -> Pos]
+sousa angle = map (\f -> f angle)
+    [
+    moveFoward 0
+    , moveFoward 1
+    , moveFoward (-1)
+    , moveFoward 0
+    ]
 
 apply :: [Pos -> Pos] -> Pos -> [Pos]
 apply [] _ = []
@@ -38,12 +50,8 @@ apply (f:fs) xy = nxy : apply fs nxy
     where
         nxy = f xy
 
--- 式をパースするときは最終的にこのリストを返す
-koch :: [Pos -> Pos]
-koch = [moveFoward 0, moveFoward 1, moveFoward (-1), moveFoward 0]
-
 kochresult :: [(Float, Float)]
-kochresult = (0, 0) : apply koch (0, 0)
+kochresult = (0, 0) : apply (sousa theta) (0, 0)
 
 
 someFunc :: IO ()
