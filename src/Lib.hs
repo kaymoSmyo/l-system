@@ -12,8 +12,8 @@ module Lib
     , Pos
     ) where
 
-import Control.Applicative
-import Data.Char
+import Control.Applicative ( Alternative(many, (<|>), empty) )
+import Data.Char ( isAlpha, isSpace )
 import qualified Data.Map.Strict as M
 
 -- 方針
@@ -22,7 +22,7 @@ import qualified Data.Map.Strict as M
 -- | 辞書型にあるなら、展開
 -- | ないなら、そのまま
 -- 文字列を関数の連続へとパースする
-type Pos = (Float, Float)
+type Pos = (Double, Double)
 
 addPos :: Pos -> Pos -> Pos
 (x, y) `addPos` (a, b) = (x + a, y + b)
@@ -34,7 +34,7 @@ foward = (100, 0)
 -- 回転量は acc * thetaで表すことができる
 -- accはパースするときに、+がでたら+1、-がでたら-1する
 -- (1,0)のベクトルを回転させ、今いるベクトルの終点に移動させることで、次のベクトルの終点の座標を得る
-moveFoward :: Int -> Float -> Pos -> Pos
+moveFoward :: Int -> Double -> Pos -> Pos
 moveFoward acc angle cxy = (x', y')
     where
         t = angle * fromIntegral acc
@@ -42,7 +42,7 @@ moveFoward acc angle cxy = (x', y')
         y = sin t * fst foward
         (x', y') = (x, y) `addPos` cxy
 
-apply :: [Float -> Pos -> Pos] -> Float -> Pos -> [Pos]
+apply :: [Double -> Pos -> Pos] -> Double -> Pos -> [Pos]
 apply fs angle initial = scanl (\pos f -> f pos) initial fs'
     where
         fs' = map (\f -> f angle) fs
@@ -86,10 +86,10 @@ nDisplacement _ 0 es = es
 nDisplacement dr n es = nDisplacement dr (n-1) (displacement dr es)
 
 -- 関数への変換
-getSousa :: Expr -> [Float -> Pos -> Pos]
+getSousa :: Expr -> [Double -> Pos -> Pos]
 getSousa e = expr2Func e 0
     where
-        expr2Func :: Expr -> Int -> [Float -> Pos -> Pos]
+        expr2Func :: Expr -> Int -> [Double -> Pos -> Pos]
         expr2Func [] _ = []
         expr2Func (s:ss) acc =
             let (newacc, lf)
