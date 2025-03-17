@@ -36,7 +36,6 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
-    , gloss
   default-language: Haskell2010
 
 executable l-system-exe
@@ -51,7 +50,6 @@ executable l-system-exe
   build-depends:
       base >=4.7 && <5
     , containers
-    , gloss
     , l-system
   default-language: Haskell2010
 
@@ -68,6 +66,5 @@ test-suite l-system-test
   build-depends:
       base >=4.7 && <5
     , containers
-    , gloss
     , l-system
   default-language: Haskell2010
