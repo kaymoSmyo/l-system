@@ -13,7 +13,6 @@ module Lib
     , Expr
     , parseDisplaceRule
     ) where
-
 import Control.Applicative
 import Data.Char
 import qualified Data.Map.Strict as M
