@@ -10,6 +10,8 @@ module Lib
     , getSousa
     , DisplaceRule
     , Pos
+    , Expr
+    , parseDisplaceRule
     ) where
 
 import Control.Applicative
@@ -61,7 +63,7 @@ apply fs angle initial = scanl (\pos f -> f pos) initial fs'
 -- "A+A"
 type Expr = [Char]
 
--- パース
+-- パース(空白の除去しかしていない)
 -- 変数はアルファベット一文字であると変更
 expr :: Parser Char
 expr = symbolChar '+' <|> symbolChar '-' <|> alphabet
@@ -73,7 +75,7 @@ parseExpr ss = s : parseExpr out
         (s, out) = head $ parse expr ss
 
 -- 置換方法は辞書型に入れる
-type DisplaceRule = M.Map Char String
+type DisplaceRule = M.Map Char Expr
 displacement :: DisplaceRule -> Expr -> Expr
 displacement _ [] = []
 displacement dr (e:es) = case M.lookup e dr of
@@ -98,8 +100,38 @@ getSousa e = expr2Func e 0
                     | isAlpha s = (acc, [moveFoward acc])
                     | otherwise = error "不正な文字種が入力されました"
             in lf ++ expr2Func ss newacc
-        
 
+-- "A->A-B"
+-- (A, A-B)に分割
+-- alphabet <* symbol "->"
+parseDisplaceRule :: String -> (Char, Expr)
+parseDisplaceRule ss = case parse (alphabet <* symbol "->") ss of
+    [(c, out)] -> (c, parseExpr out)
+    [] -> error "不正な記述の置換規則"
+    _  -> error "不正な記述の置換規則"
+
+space :: Parser ()
+space = many (sat isSpace) >> return ()
+
+token :: Parser a -> Parser a
+token p = do
+    space
+    v <- p
+    space
+    return v
+
+alphabet :: Parser Char
+alphabet = token (sat isAlpha)
+
+symbolChar :: Char -> Parser Char
+symbolChar c = token (char c)
+
+string :: String -> Parser String
+string [] = pure []
+string (x:xs) = char x *> string xs *> pure (x:xs)
+
+symbol ::String -> Parser String
+symbol ss = token (string ss)
 newtype Parser a = P (String -> [(a, String)])
 
 instance Functor Parser where
@@ -160,19 +192,3 @@ sat predicate = do
 
 char :: Char -> Parser Char
 char x = sat (==x)
-
-space :: Parser ()
-space = many (sat isSpace) >> return ()
-
-token :: Parser a -> Parser a
-token p = do
-    space
-    v <- p
-    space
-    return v
-
-alphabet :: Parser Char
-alphabet = token (sat isAlpha)
-
-symbolChar :: Char -> Parser Char
-symbolChar c = token (char c)
