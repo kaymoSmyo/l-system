@@ -1,6 +1,6 @@
 module Lsystem.Parser 
     ( Parser
-
+    
     ) where
 
 import Control.Applicative
@@ -90,5 +90,6 @@ string (x:xs) = char x *> string xs *> pure (x:xs)
 symbol :: String -> Parser String
 symbol ss = token (string ss)
 
-expr :: Parser Char
-expr = symbolChar '+' <|> symbolChar '-' <|> alphabet
+isValidChar :: Parser Char
+isValidChar = symbolChar '+' <|> symbolChar '-' <|> alphabet
+
