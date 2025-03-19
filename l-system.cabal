@@ -26,6 +26,9 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Lsystem
+      Lsystem.Core
+      Lsystem.Parser
   other-modules:
       Paths_l_system
   autogen-modules:
