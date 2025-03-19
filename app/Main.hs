@@ -4,8 +4,7 @@ import Diagrams.Prelude
 -- import Diagrams.Backend.SVG.CmdLine
 import Diagrams.Backend.Cairo
 
-import Lsystem.Core
-import Lsystem (displace, getPositions)
+import Lsystem
 -- 手順
 -- 置換と式の空白の除去 |> 置換方法と式の取得 |> 関数への変換
 
@@ -28,4 +27,10 @@ dragonDisplaces = makeDisplacementRules
     , 'b' `displace` "a + b"
     ]
 dragonResult :: [(Double, Double)]
-dragonResult = getPositions (0, 0) (makeExpr "a") (pi/2) dragonDisplaces 12
+dragonResult = 
+    getPositions 
+        (0, 0) 
+        (makeExpr "a") 
+        (pi/2) 
+        dragonDisplaces 
+        12

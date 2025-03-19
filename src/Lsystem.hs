@@ -1,7 +1,9 @@
 module Lsystem 
     ( displace
-    , getPositions
+    , makeExpr
+    , DisplaceRules
     , makeDisplacementRules
+    , getPositions
     ) where
 
 -- A -> A - B という式は
