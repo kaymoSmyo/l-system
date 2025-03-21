@@ -27,6 +27,7 @@ library
   exposed-modules:
       Lsystem
       Lsystem.Core
+      Lsystem.Types
   other-modules:
       Paths_l_system
   autogen-modules:

@@ -23,14 +23,14 @@ drawPolyline points =
 
 displaces :: DisplaceRules
 displaces = makeDisplacementRules 
-    [ 'a' `displace` "a - b"
-    , 'b' `displace` "a + b"
+    [ 'a' `displace` "a+b++b-a--aa-b+"
+    , 'b' `displace` "-a+bb++b+a--a-b"
     ]
 result :: [(Double, Double)]
 result = 
     getPositions 
         (0, 0) 
         (makeExpr "a") 
-        (pi/2) 
+        (pi/3) 
         displaces 
-        12
+        5

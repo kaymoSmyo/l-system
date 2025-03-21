@@ -63,6 +63,7 @@ moveFoward acc angle cxy = (x', y')
         y = sin t * fst foward
         (x', y') = (x, y) `addPos` cxy
 
+-- 与えられた式を与えられた置換規則したがって、n回置換していく
 nExpansion :: Expression -> DisplaceRules -> Int -> Expression
 nExpansion expr _ 0 = expr
 nExpansion (Expression es) (DR dr) n = nExpansion (makeExpr nss) (DR dr) (n-1)
@@ -74,7 +75,7 @@ nExpansion (Expression es) (DR dr) n = nExpansion (makeExpr nss) (DR dr) (n-1)
                 Just (Expression expr) -> expr ++ expansion ss dr'
                 Nothing -> s : expansion ss dr'
         nss = expansion es dr
-
+-- 与えられた式から、moveFowardのリストを作成
 e2Moves :: Expression -> [Double -> Pos -> Pos]
 e2Moves (Expression es) = e2Move es 0
     where
