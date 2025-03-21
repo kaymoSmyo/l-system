@@ -27,6 +27,7 @@ dependencies:
 - diagrams-svg
 - gloss
 - diagrams-cairo
+- hspec
 ghc-options:
 - -Wall
 - -Wcompat
