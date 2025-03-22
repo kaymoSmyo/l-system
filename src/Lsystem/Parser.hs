@@ -1,7 +1,10 @@
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE TupleSections #-}
 module Lsystem.Parser
-    (
+    ( parseVariabe
+    , parseConstant
+    , parseOperator
+    , parseExpression
+    , parseDisplaceRule
     ) where
 
 import Control.Applicative
@@ -65,7 +68,7 @@ sat predicate = do
 
 space :: Parser ()
 space = do
-    many (sat isSpace)
+    _ <- many (sat isSpace)
     return ()
 
 token :: Parser a -> Parser a
@@ -81,8 +84,8 @@ char x = sat (==x)
 string :: String -> Parser String
 string [] = return []
 string (x:xs) = do
-    char x
-    string xs
+    _ <- char x
+    _ <- string xs
     return (x:xs)
 
 parseString :: String -> Parser String
