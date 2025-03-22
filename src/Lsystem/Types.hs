@@ -2,6 +2,7 @@
 module Lsystem.Types
     ( Symbol
     , SymbolError(..)
+    , Expression
     , makeVariable
     , makeConstant
     , makeOP
@@ -82,4 +83,4 @@ pattern OP :: Char -> Symbol
 pattern OP c <- Operator c
 
 -- 今後作るパーサで返すもの
-newtype Expression = Expression [Symbol]
+type Expression = [Symbol]
