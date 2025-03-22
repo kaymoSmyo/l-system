@@ -3,6 +3,7 @@ module Lsystem.Types
     ( Symbol
     , SymbolError(..)
     , Expression
+    , DisplaceRule
     , makeVariable
     , makeConstant
     , makeOperator
@@ -84,3 +85,5 @@ pattern OP c <- Operator c
 
 -- 今後作るパーサで返すもの
 type Expression = [Symbol]
+
+type DisplaceRule = (Symbol, Expression)
