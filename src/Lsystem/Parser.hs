@@ -1,5 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
-
+{-# LANGUAGE TupleSections #-}
 module Lsystem.Parser
     (
     ) where
@@ -75,6 +75,19 @@ token p = do
     space
     return v
 
+char :: Char -> Parser Char
+char x = sat (==x)
+
+string :: String -> Parser String
+string [] = return []
+string (x:xs) = do
+    char x
+    string xs
+    return (x:xs)
+
+parseString :: String -> Parser String
+parseString ss = token (string ss)
+
 -- Parser Expression => P (String -> [(Expression, String)])
 -- ここで[(Expression, String)]となっているのは空リストで失敗を表すから
 -- Expression == [Symbol]なので、パーサ内でmakeVariable :: Char -> Either SymbolError Symbolを使う必要
@@ -111,5 +124,5 @@ parseExpression = do
     s <- parseSymbol
     ((s : ) <$> parseExpression) <|> pure [s]
 
--- parseDisplaceRule :: Parser DisplaceRule
--- parseDisplaceRule = 
+parseDisplaceRule :: Parser DisplaceRule
+parseDisplaceRule = (,) <$> parseVariabe <*> (parseString "->" *> parseExpression)
