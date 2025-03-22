@@ -5,13 +5,13 @@ module Lsystem.Types
     , Expression
     , makeVariable
     , makeConstant
-    , makeOP
+    , makeOperator
     , pattern Var
     , pattern Const
     , pattern OP
     ) where
 
-import Data.Char (isUpper, isAlpha)
+import Data.Char (isUpper, isAlpha, isLower)
 -- BNF
 -- DisplaceRule ::= Symbol -> Expression
 -- Expression ::= Symbol (Expression | ε)
@@ -62,11 +62,11 @@ makeVariable c
 
 makeConstant :: Char -> Either SymbolError Symbol
 makeConstant c
-    | not (isUpper c) = Right (Constant c)
+    | isLower c = Right (Constant c)
     | otherwise = Left (InvalidConstant c)
 
-makeOP :: Char -> Either SymbolError Symbol
-makeOP c
+makeOperator :: Char -> Either SymbolError Symbol
+makeOperator c
     | not (isAlpha c) = Right (Operator c)
     | otherwise = Left (InvalidOperator c)
 

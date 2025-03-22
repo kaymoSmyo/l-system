@@ -11,11 +11,17 @@ alwaysOne = 1
 main :: IO ()
 main = hspec $ do
     describe "Symbol Smart Constructors" $ do
-        describe "makeVariable" $ do
-            it "大文字をVariableに変換できる" $ do
-                fmap variablel2Bool (makeVariable 'A') `shouldBe` Right True
-            it "小文字をVariableに変換したらエラー" $ do
-                fmap variablel2Bool (makeVariable 'b') `shouldBe` Left (InvalidVariable 'b')
+        it "makeVariable" $ do
+            fmap variablel2Bool (makeVariable 'A') `shouldBe` Right True
+            fmap variablel2Bool (makeVariable 'a') `shouldBe` Left (InvalidVariable 'a')
+        it "makeContestant" $ do
+            fmap constant2Bool (makeConstant 'a') `shouldBe` Right True
+            fmap constant2Bool (makeConstant 'A') `shouldBe` Left (InvalidConstant 'A')
+        it "makeContestant" $ do
+            fmap operator2Bool (makeOperator '+') `shouldBe` Right True
+            fmap operator2Bool (makeOperator 'A') `shouldBe` Left (InvalidOperator 'A')
+            fmap operator2Bool (makeOperator 'a') `shouldBe` Left (InvalidOperator 'a')
+
     -- describe "Variable/Constant/Operatorのパーサ" $ do
     --     describe "Variableパーサ" $ do
     --         it "成功" $ do
