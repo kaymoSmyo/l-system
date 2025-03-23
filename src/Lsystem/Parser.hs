@@ -5,6 +5,7 @@ module Lsystem.Parser
     , parseOperator
     , parseExpression
     , parseDisplaceRule
+    , runParser
     ) where
 
 import Control.Applicative
