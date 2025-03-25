@@ -4,6 +4,7 @@ module Lsystem.Types
     , SymbolError(..)
     , Expression
     , DisplaceRule
+    , DRs
     , makeVariable
     , makeConstant
     , makeOperator
@@ -45,8 +46,7 @@ import Data.Char (isUpper, isAlpha, isLower)
 -- Symbol ::= Variable | Constant | Operator
 -- 直接、型コンストラクタを使用して、Variable等を作成することはしない
 data Symbol = Variable Char | Constant Char | Operator Char
-    deriving (Eq, Show)
-
+    deriving (Eq, Show, Ord)
 
 -- スマートコンストラクタ用のエラー型の定義
 data SymbolError =
