@@ -57,20 +57,20 @@ data SymbolError =
 
 -- スマートコンストラクタ
 -- この関数をエクスポートして、外部ではこの関数のみでしか、Variable等を作れないようにする
-makeVariable :: Char -> Symbol
+makeVariable :: Char -> Either SymbolError Symbol
 makeVariable c 
-    | isUpper c = Variable c
-    | otherwise = error ("InvalidVariable: " ++ [c])
+    | isUpper c = Right (Variable c)
+    | otherwise = Left (InvalidVariable c)
 
-makeConstant :: Char -> Symbol
+makeConstant :: Char -> Either SymbolError Symbol
 makeConstant c
-    | isLower c = Constant c
-    | otherwise = error ("InvalidConstant: " ++ [c])
+    | isLower c = Right (Constant c)
+    | otherwise = Left (InvalidConstant c)
 
-makeOperator :: Char -> Symbol
+makeOperator :: Char -> Either SymbolError Symbol
 makeOperator c
-    | not (isAlpha c) = Operator c
-    | otherwise = error ("InvalidOperator: " ++ [c])
+    | not (isAlpha c) = Right (Operator c)
+    | otherwise = Left (InvalidOperator c)
 
 {-# COMPLETE Var, Const, OP #-}
 -- 外部の関数でのパターンマッチ用

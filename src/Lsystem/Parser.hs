@@ -99,20 +99,26 @@ parseString ss = token (string ss)
 parseVariabe :: Parser Symbol
 parseVariabe = token (P f)
     where
+        f (x:xs) = case makeVariable x of
+            Left _ -> []
+            Right vx -> [(vx, xs)]
         f [] = []
-        f (x:xs) = [(makeVariable x, xs)]
 
 parseConstant :: Parser Symbol
 parseConstant = token (P f)
     where
+        f (x:xs) = case makeConstant x of
+            Left _ -> []
+            Right cx -> [(cx, xs)]
         f [] = []
-        f (x:xs) = [(makeConstant x, xs)]
 
 parseOperator :: Parser Symbol
 parseOperator = token (P f)
     where
+        f (x:xs) = case makeOperator x of
+            Left _ -> []
+            Right ox -> [(ox, xs)]
         f [] = []
-        f (x:xs) = [(makeOperator x, xs)]
 
 parseSymbol :: Parser Symbol
 parseSymbol = token (parseVariabe <|> parseConstant <|> parseOperator)

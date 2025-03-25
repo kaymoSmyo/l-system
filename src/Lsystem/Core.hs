@@ -16,6 +16,8 @@ nExpansion expr drs n = nExpansion expr' drs (n-1)
         expr' = expansion expr drs
         expansion :: Expression -> DRs -> Expression
         expansion [] _ = []
+        expansion (s@(Const _): ss) tmpDRs = s : expansion ss tmpDRs
+        expansion (s@(OP _) : ss) tmpDRs = s : expansion ss tmpDRs
         expansion (s: ss) tmpDRs =
                 case MS.lookup s tmpDRs of
                     Just t -> t ++ expansion ss tmpDRs
@@ -38,18 +40,3 @@ moveFoward acc angle cxy = (x', y')
         x = cos t * fst foward
         y = sin t * fst foward
         (x', y') = (x, y) `addPos` cxy
-
- 
--- 与えられた式から、moveFowardのリストを作成
--- e2Moves :: Expression -> [Double -> Pos -> Pos]
--- e2Moves (Expression es) = e2Move es 0
---     where
---         e2Move :: String -> Int -> [Double -> Pos -> Pos]
---         e2Move [] _ = []
---         e2Move (s:ss) acc = 
---             let (newacc, lf)
---                     | s == '+' = (acc+1, [])
---                     | s == '-' = (acc-1, [])
---                     | isAlpha s = (acc, [moveFoward acc])
---                     | otherwise = error "不正な文字種が入力されました"
---             in lf ++ e2Move ss newacc
