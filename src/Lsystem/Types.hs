@@ -12,6 +12,7 @@ module Lsystem.Types
     , pattern OP
     ) where
 
+import qualified Data.Map.Strict as MS
 import Data.Char (isUpper, isAlpha, isLower)
 -- BNF
 -- DisplaceRule ::= Symbol -> Expression
@@ -87,3 +88,5 @@ pattern OP c <- Operator c
 type Expression = [Symbol]
 
 type DisplaceRule = (Symbol, Expression)
+
+type DRs = MS.Map Symbol Expression
