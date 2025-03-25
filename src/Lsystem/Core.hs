@@ -1,13 +1,25 @@
 module Lsystem.Core
     ( Pos
     , nExpansion
-    , e2Moves
     ) where
 
-import Data.Char (isAlpha, isSpace)
 import qualified Data.Map.Strict as MS
 import Lsystem.Types
+import Lsystem.Parser
 
+-- 与えられた式を与えられた置換規則したがって、n回置換していく
+nExpansion :: Expression -> DRs -> Int -> Expression
+nExpansion expr _ 0 = expr
+nExpansion [] _ _ = []
+nExpansion expr drs n = nExpansion expr' drs (n-1)
+    where 
+        expr' = expansion expr drs
+        expansion :: Expression -> DRs -> Expression
+        expansion [] _ = []
+        expansion (s: ss) tmpDRs =
+                case MS.lookup s tmpDRs of
+                    Just t -> t ++ expansion ss tmpDRs
+                    Nothing -> s : expansion ss tmpDRs
 
 type Pos = (Double, Double)
 
@@ -27,19 +39,7 @@ moveFoward acc angle cxy = (x', y')
         y = sin t * fst foward
         (x', y') = (x, y) `addPos` cxy
 
--- 与えられた式を与えられた置換規則したがって、n回置換していく
--- nExpansion :: Expression -> DisplaceRules -> Int -> Expression
--- nExpansion expr _ 0 = expr
--- nExpansion (Expression es) (DR dr) n = nExpansion (makeExpr nss) (DR dr) (n-1)
---     where
---         expansion :: String -> MS.Map Identifer Expression -> String
---         expansion [] _ = []
---         expansion (s:ss) dr' = 
---             case MS.lookup (Identifer s) dr' of
---                 Just (Expression expr) -> expr ++ expansion ss dr'
---                 Nothing -> s : expansion ss dr'
---         nss = expansion es dr
-
+ 
 -- 与えられた式から、moveFowardのリストを作成
 -- e2Moves :: Expression -> [Double -> Pos -> Pos]
 -- e2Moves (Expression es) = e2Move es 0
