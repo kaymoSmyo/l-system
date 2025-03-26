@@ -5,6 +5,7 @@ module Lsystem.Core
     , foward
     , moveFoward
     , getPoss
+    , makeDRs
     ) where
 
 import qualified Data.Map.Strict as MS
@@ -60,9 +61,18 @@ e2Moves expr = f expr 0
         f (_ : ss) n = moveFoward n : f ss n
 
 -- 最終的な処理、座標を計算する
-getPoss :: DRs -> Angle -> Int -> Expression -> Pos -> [Pos]
-getPoss drs angle n expr start = poss
+getPoss :: DRs -> Angle -> Int -> String -> Pos -> [Pos]
+getPoss drs angle n s start = poss
     where
+        expr = fst . head $ runParser parseExpression s
         poss = scanl (\p f -> f p) start moves
         moves = map (\f -> f angle) $ e2Moves $ nExpansion expr drs n
 
+makeDRs :: [String] -> DRs
+makeDRs ss = MS.fromList rules
+    where
+        rules = do
+            s <- ss
+            case runParser parseDisplaceRule s of
+                [(dr, _)] -> [dr] -- 最初の結果のみ使用
+                _ -> error "faild parse"        -- パース失敗
