@@ -1,20 +1,17 @@
 module Lsystem 
-    ( displace
-    , makeExpr
-    , DisplaceRules
-    , makeDisplacementRules
-    , getPositions
+    ( 
     ) where
-
-
+import Lsystem.Parser
 import Lsystem.Core
-displace :: Char -> String -> (Identifer, Expression)
-displace c ss = (makeIdent c , makeExpr ss)
+import Lsystem.Types
+import qualified Data.Map.Strict as MS
 
 
--- dragonCurve = getPositions (0, 0) 90 dragonDisplaces (makeExpr "a") 12
-
-getPositions :: Pos -> Expression -> Double -> DisplaceRules -> Int ->  [(Double, Double)]
-getPositions start expr angle rules n = scanl (\pos f -> f pos) start moves 
+makeDRs :: [String] -> DRs
+makeDRs ss = MS.fromList rules
     where
-        moves = map (\f -> f angle) (e2Moves $ nExpansion expr rules n)
+        rules = do
+            s <- ss
+            case runParser parseDisplaceRule s of
+                [(dr, _)] -> [dr] -- 最初の結果のみ使用
+                _ -> error "faild parse"        -- パース失敗
