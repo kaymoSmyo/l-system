@@ -74,5 +74,5 @@ makeDRs ss = MS.fromList rules
         rules = do
             s <- ss
             case runParser parseDisplaceRule s of
-                [(dr, _)] -> [dr] -- 最初の結果のみ使用
-                _ -> error "faild parse"        -- パース失敗
+                [(dr, _)] -> [dr]
+                _ -> error "faild parse"
