@@ -78,3 +78,9 @@ makeDRs ss = MS.fromList rules
             case runParser parseDisplaceRule s of
                 Right (dr, "") -> [dr]
                 _ -> error ("Incorrect input: " ++ s)
+
+displace :: Char -> String -> Either String DisplaceRule
+displace c s = do
+    (v, out) <- runParser parseVariabe [c]
+    (e, out) <- runParser parseExpression s
+    pure (v, e)
