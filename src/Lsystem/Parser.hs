@@ -55,7 +55,7 @@ runParser (P p) = p
 item :: Parser Char
 item = P (
     \case
-        [] -> Left "Empty String"
+        [] -> Left "input: Empty String"
         (x:xs) -> Right (x, xs)
     )
 
@@ -92,33 +92,24 @@ string (x:xs) = do
 parseString :: String -> Parser String
 parseString ss = token (string ss)
 
+smbl :: (Char -> Either SymbolError Symbol) -> String -> Either String (Symbol, String)
+smbl _ [] = Left "input: Empty String"
+smbl f (x:xs) = case f x of
+    Left err -> Left (show err) 
+    Right s -> Right (s, xs)
+
 -- Parser Expression => P (String -> [(Expression, String)])
 -- ここで[(Expression, String)]となっているのは空リストで失敗を表すから
 -- Expression == [Symbol]なので、パーサ内でmakeVariable :: Char -> Either SymbolError Symbolを使う必要
 -- 一文字とって、makeVariableする
 parseVariabe :: Parser Symbol
-parseVariabe = token (P f)
-    where
-        f (x:xs) = case makeVariable x of
-            Left _ -> []
-            Right vx -> [(vx, xs)]
-        f [] = []
+parseVariabe = token $ P (smbl makeVariable)
 
 parseConstant :: Parser Symbol
-parseConstant = token (P f)
-    where
-        f (x:xs) = case makeConstant x of
-            Left _ -> []
-            Right cx -> [(cx, xs)]
-        f [] = []
-
+parseConstant = token $ P (smbl makeConstant)
+    
 parseOperator :: Parser Symbol
-parseOperator = token (P f)
-    where
-        f (x:xs) = case makeOperator x of
-            Left _ -> []
-            Right ox -> [(ox, xs)]
-        f [] = []
+parseOperator = token $ P (smbl makeOperator)
 
 parseSymbol :: Parser Symbol
 parseSymbol = token (parseVariabe <|> parseConstant <|> parseOperator)
