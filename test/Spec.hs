@@ -21,7 +21,7 @@ main = hspec $ do
 
     describe "Variable/Constant/Operatorのパーサ" $ do
         it "parseVariable" $ do
-            variable2Bool (fst . head $ runParser parseVariabe "A") `shouldBe` True
+            fmap forparser (runParser parseVariabe "A") `shouldBe` Right True
             runParser parseVariabe "a" `shouldBe` []
             runParser parseVariabe "+" `shouldBe` []
         it "parseConstant" $ do
@@ -64,3 +64,6 @@ operator2Bool :: Symbol -> Bool
 operator2Bool (OP _) = True
 operator2Bool _ = False
 fsthead = fst . head
+forparser :: (Symbol, a) -> Bool
+forparser (Var _, _) = True
+forparser _ = False
