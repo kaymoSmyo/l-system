@@ -62,11 +62,13 @@ e2Moves expr = f expr 0
 
 -- 最終的な処理、座標を計算する
 getPoss :: DRs -> Angle -> Int -> String -> Pos -> [Pos]
-getPoss drs angle n s start = poss
-    where
-        expr = fst . head $ runParser parseExpression s
-        poss = scanl (\p f -> f p) start moves
-        moves = map (\f -> f angle) $ e2Moves $ nExpansion expr drs n
+getPoss drs angle n s start = case runParser parseExpression s of
+    Right (expr, "") -> poss
+        where
+            poss = scanl (\p f -> f p) start moves
+            moves = map (\f -> f angle) $ e2Moves $ nExpansion expr drs n
+    Right (_, out) -> error ("Incorrect input: " ++ out)
+    Left err -> error (show err)
 
 makeDRs :: [String] -> DRs
 makeDRs ss = MS.fromList rules
@@ -74,5 +76,5 @@ makeDRs ss = MS.fromList rules
         rules = do
             s <- ss
             case runParser parseDisplaceRule s of
-                [(dr, _)] -> [dr]
-                _ -> error "faild parse"
+                Right (dr, "") -> [dr]
+                _ -> error ("Incorrect input: " ++ s)
