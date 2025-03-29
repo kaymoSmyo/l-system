@@ -12,51 +12,51 @@ import Control.Applicative
 import Data.Char
 import Lsystem.Types
 
-newtype Parser a = P (String -> Either String a)
+newtype Parser a = P (String -> Either String (a, String))
 
 instance Functor Parser where
     -- fmap :: (a -> b) ->  Parser a -> Parser b
     fmap f p = P (
         \input ->
             case runParser p input of
-                [] -> []
-                [(x, out)] -> [(f x, out)]
+                Left s -> Left s
+                Right (a, out) -> Right (f a, out)
         )
 
 instance Applicative Parser where
     -- pure :: a -> Parser a
-    pure a = P (\input -> [(a, input)])
+    pure a = P (\input -> Right (a, input))
     -- (<*>) :: Parser (a -> b) -> Parser a -> Parser b
     pa2b <*> pa = P (
         \input -> case runParser pa2b input of
-            [] -> []
-            [(a2b, out)] -> runParser (fmap a2b pa) out
+            Left s -> Left s
+            Right (a2b, out) -> runParser (fmap a2b pa) out
         )
 instance Monad Parser where
     -- (>>=) :: Parser a -> (a -> Parser b) -> Parser b
     pa >>= a2pb = P (
         \input -> case runParser pa input of
-            [] -> []
-            [(a, out)] -> runParser (a2pb a) out
+            Left s -> Left s
+            Right (a, out) -> runParser (a2pb a) out
         )
 instance Alternative Parser where
     -- empty :: Parser a
-    empty = P (const [])
+    empty = P (const (Left ""))
     -- (<|>) :: Parser a -> Parser a -> Parser a
     p <|> q = P (
         \input -> case runParser p input of
-            [] -> runParser q input
-            [(a, out)] -> [(a, out)]
+            Left _ -> runParser q input
+            Right (a, out) -> Right (a, out)
         )
 
-runParser :: Parser a -> String -> [(a, String)]
+runParser :: Parser a -> String -> Either String (a, String)
 runParser (P p) = p
 
 item :: Parser Char
 item = P (
     \case
-        [] -> []
-        (x:xs) -> [(x, xs)]
+        [] -> Left "Empty String"
+        (x:xs) -> Right (x, xs)
     )
 
 sat :: (Char -> Bool) -> Parser Char
