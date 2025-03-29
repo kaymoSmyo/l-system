@@ -12,7 +12,7 @@ import Control.Applicative
 import Data.Char
 import Lsystem.Types
 
-newtype Parser a = P (String -> Either SymbolError a)
+newtype Parser a = P (String -> Either String a)
 
 instance Functor Parser where
     -- fmap :: (a -> b) ->  Parser a -> Parser b
