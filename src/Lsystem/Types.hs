@@ -11,6 +11,7 @@ module Lsystem.Types
     , pattern Var
     , pattern Const
     , pattern OP
+    , fromList
     ) where
 
 import qualified Data.Map.Strict as MS
@@ -58,7 +59,7 @@ data MakeSymbolError =
 -- スマートコンストラクタ
 -- この関数をエクスポートして、外部ではこの関数のみでしか、Variable等を作れないようにする
 makeVariable :: Char -> Either MakeSymbolError Symbol
-makeVariable c 
+makeVariable c
     | isUpper c = Right (Variable c)
     | otherwise = Left (InvalidVariable c)
 
@@ -90,3 +91,5 @@ type Expression = [Symbol]
 type DisplaceRule = (Symbol, Expression)
 
 type DRs = MS.Map Symbol Expression
+fromList :: [(Symbol, Expression)] -> DRs
+fromList = MS.fromList
