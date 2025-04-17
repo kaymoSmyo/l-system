@@ -1,11 +1,11 @@
 module Lsystem.EvalExpr
     ( Pos
     , nExpansion
-    , e2Moves
     , foward
     , moveFoward
     , getPoss
     , makeDRs
+    , exprToMoves
     ) where
 
 import qualified Data.Map.Strict as MS
@@ -40,35 +40,32 @@ foward :: Double
 foward = 100
 
 -- 1ステップ前進
-moveFoward :: Int -> Double -> Pos -> Pos
-moveFoward acc angle cxy = (x', y')
+moveFoward :: Angle -> Pos -> Pos
+moveFoward angle cxy = (x', y')
     where
-        t = angle * fromIntegral acc
-        x = cos t * foward
-        y = sin t * foward
+        x = cos angle * foward
+        y = sin angle * foward
         (x', y') = (x, y) `addPos` cxy
 
 -- 与えられた式をmoveFowardのリストに変換
-e2Moves :: Expression -> [Double -> Pos -> Pos]
-e2Moves expr = f expr 0
+exprToMoves :: Expression -> Angle -> [Pos -> Pos]
+exprToMoves expr angle = f expr 0
     where
-        f :: Expression -> Int -> [Double -> Pos -> Pos]
+        -- thetaは現在の角度を表す
+        f :: Expression -> Angle -> [Pos -> Pos]
         f [] _ = []
-        f (OP s : ss) n
-            | s == '+' = f ss (n+1)
-            | s == '-' = f ss (n-1)
-            | otherwise = f ss n
-        f (_ : ss) n = moveFoward n : f ss n
+        f (OP s : ss) theta
+            | s == '+' = f ss (theta + angle)
+            | s == '-' = f ss (theta - angle)
+            | otherwise = f ss theta
+        f (_ : ss) theta = moveFoward theta : f ss theta
 
 -- 最終的な処理、座標を計算する
-getPoss :: DRs -> Angle -> Int -> String -> Pos -> [Pos]
-getPoss drs angle n s start = case runParser parseExpression s of
-    Right (expr, "") -> poss
-        where
-            poss = scanl (\p f -> f p) start moves
-            moves = map (\f -> f angle) $ e2Moves $ nExpansion expr drs n
-    Right (_, out) -> error ("Incorrect input: " ++ out)
-    Left err -> error (show err)
+getPoss :: Expression -> Angle -> Pos -> [Pos]
+getPoss expr angle start = 
+    let moves = exprToMoves expr angle
+        poss = scanl (\p f -> f p) start moves
+    in poss
 
 makeDRs :: [String] -> DRs
 makeDRs ss = MS.fromList rules
