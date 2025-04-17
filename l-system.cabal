@@ -27,6 +27,7 @@ library
   exposed-modules:
       Lsystem
       Lsystem.EvalExpr
+      Lsystem.InOut
       Lsystem.Parser
       Lsystem.Types
   other-modules:
