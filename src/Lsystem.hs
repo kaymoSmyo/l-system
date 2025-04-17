@@ -1,5 +1,11 @@
 module Lsystem 
-    ( makeDRs
-    , getPoss
+    ( evalLsystem
+    , execLsystem
+    , ParseError
+    , Expression
+    , Pos
     ) where
-import Lsystem.EvalExpr
+import Lsystem.InOut (evalLsystem, execLsystem)
+import Lsystem.Parser (ParseError)
+import Lsystem.Types (Expression)
+import Lsystem.EvalExpr(Pos)
