@@ -2,4 +2,4 @@ module Lsystem
     ( makeDRs
     , getPoss
     ) where
-import Lsystem.Core
+import Lsystem.EvalExpr
