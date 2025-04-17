@@ -6,6 +6,7 @@ module Lsystem.Parser
     , parseExpression
     , parseDisplaceRule
     , runParser
+    , ParseError(..)
     ) where
 
 import Control.Applicative
@@ -51,7 +52,7 @@ instance Alternative Parser where
         )
 
 data ParseError = EmptyInput | MakeSymbolError MakeSymbolError
-    deriving Show
+    deriving (Show, Eq)
 
 runParser :: Parser a -> String -> Either ParseError (a, String)
 runParser (P p) = p
