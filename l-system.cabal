@@ -26,7 +26,7 @@ source-repository head
 library
   exposed-modules:
       Lsystem
-      Lsystem.Core
+      Lsystem.EvalExpr
       Lsystem.Parser
       Lsystem.Types
   other-modules:
