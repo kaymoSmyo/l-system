@@ -4,13 +4,12 @@ module Lsystem.EvalExpr
     , foward
     , moveFoward
     , getPoss
-    , makeDRs
     , exprToMoves
+    , Angle
     ) where
 
 import qualified Data.Map.Strict as MS
 import Lsystem.Types
-import Lsystem.Parser
 
 -- 与えられた式を与えられた置換規則したがって、n回置換していく
 nExpansion :: Expression -> DRs -> Int -> Expression
@@ -66,12 +65,3 @@ getPoss expr angle start =
     let moves = exprToMoves expr angle
         poss = scanl (\p f -> f p) start moves
     in poss
-
-makeDRs :: [String] -> DRs
-makeDRs ss = MS.fromList rules
-    where
-        rules = do
-            s <- ss
-            case runParser parseDisplaceRule s of
-                Right (dr, "") -> [dr]
-                _ -> error ("Incorrect input: " ++ s)
