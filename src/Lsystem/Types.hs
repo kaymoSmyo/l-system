@@ -1,7 +1,7 @@
 {-# LANGUAGE PatternSynonyms #-}
 module Lsystem.Types
     ( Symbol
-    , SymbolError(..)
+    , MakeSymbolError(..)
     , Expression
     , DisplaceRule
     , DRs
@@ -49,7 +49,7 @@ data Symbol = Variable Char | Constant Char | Operator Char
     deriving (Eq, Show, Ord)
 
 -- スマートコンストラクタ用のエラー型の定義
-data SymbolError =
+data MakeSymbolError =
     InvalidVariable Char |
     InvalidConstant Char |
     InvalidOperator Char
@@ -57,17 +57,17 @@ data SymbolError =
 
 -- スマートコンストラクタ
 -- この関数をエクスポートして、外部ではこの関数のみでしか、Variable等を作れないようにする
-makeVariable :: Char -> Either SymbolError Symbol
+makeVariable :: Char -> Either MakeSymbolError Symbol
 makeVariable c 
     | isUpper c = Right (Variable c)
     | otherwise = Left (InvalidVariable c)
 
-makeConstant :: Char -> Either SymbolError Symbol
+makeConstant :: Char -> Either MakeSymbolError Symbol
 makeConstant c
     | isLower c = Right (Constant c)
     | otherwise = Left (InvalidConstant c)
 
-makeOperator :: Char -> Either SymbolError Symbol
+makeOperator :: Char -> Either MakeSymbolError Symbol
 makeOperator c
     | not (isAlpha c) = Right (Operator c)
     | otherwise = Left (InvalidOperator c)
