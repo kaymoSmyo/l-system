@@ -32,33 +32,39 @@ main = hspec $ do
             runParser parseOperator "A" `shouldBe` Left (MakeSymbolError (InvalidOperator 'A'))
             runParser parseOperator "a" `shouldBe` Left (MakeSymbolError (InvalidOperator 'a'))
             operator2Bool . fst <$> runParser parseOperator "+" `shouldBe` Right True
-    
-    describe "e2Movesのテスト" $ do
-        it "succsess" $ do
-            length (e2Moves []) `shouldBe` 0
-            length . e2Moves . fst <$> runParser parseExpression "+A" `shouldBe` Right 1
-        
-        it "succsess2" $ do
-            let angle = pi/2
-            let moves = map (\f -> f angle) . e2Moves . fst <$> runParser parseExpression "+A"
-            let poss = scanl (\pos f -> f pos) (0, 0) <$> moves
-            poss `shouldBe` Right  (scanl (\pos f -> f pos) (0, 0) [moveFoward 1 angle])
-        
-        it "succsess3" $ do
-            let angle = pi/2
-            let moves = map (\f -> f angle). e2Moves . fst <$> runParser parseExpression "-A"
-            let finalPos = scanl (\pos f -> f pos) (0, 0) <$> moves
-            finalPos `shouldBe` Right (scanl (\pos f -> f pos) (0, 0) [moveFoward (-1) angle])
 
-        it "succsess3" $ do
-            let angle = pi/3
-            let moves = map (\f -> f angle). e2Moves . fst <$> runParser parseExpression "A + B - - A + B + + - -"
-            let poss = scanl (\pos f -> f pos) (0, 0) <$> moves
-            poss `shouldBe` 
-                Right (
-                    scanl (\pos f -> f pos) (0, 0)
-                        (map (\f -> f angle) [moveFoward 0, moveFoward 1, moveFoward (-1), moveFoward 0])
-                    )
+    describe "e2Movesのテスト" $ do
+        it "success" $ do
+            let angle = pi/2
+            let (Right expr) = fst <$> runParser parseExpression "+A"
+            let ret = getPoss expr angle (0, 0)
+            ret `shouldBe` [(0, 0), (6.123233995736766e-15,100.0)]
+        it "success" $ do
+            let angle = pi/2
+            let (Right expr) = fst <$> runParser parseExpression "+-A"
+            let ret = getPoss expr angle (0, 0)
+            ret `shouldBe` [(0, 0), (100, 0)]
+        -- it "succsess2" $ do
+        --     let angle = pi/2
+        --     let moves = map (\f -> f angle) . e2Moves . fst <$> runParser parseExpression "+A"
+        --     let poss = scanl (\pos f -> f pos) (0, 0) <$> moves
+        --     poss `shouldBe` Right  (scanl (\pos f -> f pos) (0, 0) [moveFoward 1 angle])
+
+        -- it "succsess3" $ do
+        --     let angle = pi/2
+        --     let moves = map (\f -> f angle). e2Moves . fst <$> runParser parseExpression "-A"
+        --     let finalPos = scanl (\pos f -> f pos) (0, 0) <$> moves
+        --     finalPos `shouldBe` Right (scanl (\pos f -> f pos) (0, 0) [moveFoward (-1) angle])
+
+        -- it "succsess3" $ do
+        --     let angle = pi/3
+        --     let moves = map (\f -> f angle). e2Moves . fst <$> runParser parseExpression "A + B - - A + B + + - -"
+        --     let poss = scanl (\pos f -> f pos) (0, 0) <$> moves
+        --     poss `shouldBe` 
+        --         Right (
+        --             scanl (\pos f -> f pos) (0, 0)
+        --                 (map (\f -> f angle) [moveFoward 0, moveFoward 1, moveFoward (-1), moveFoward 0])
+        --             )
 
 variable2Bool :: Symbol -> Bool
 variable2Bool (Var _) = True
