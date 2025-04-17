@@ -51,6 +51,7 @@ instance Alternative Parser where
         )
 
 data ParseError = EmptyInput | MakeSymbolError MakeSymbolError
+    deriving Show
 
 runParser :: Parser a -> String -> Either ParseError (a, String)
 runParser (P p) = p
