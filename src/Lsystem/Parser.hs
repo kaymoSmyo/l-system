@@ -12,7 +12,7 @@ import Control.Applicative
 import Data.Char
 import Lsystem.Types
 
-newtype Parser a = P (String -> Either String (a, String))
+newtype Parser a = P (String -> Either ParseError (a, String))
 
 instance Functor Parser where
     -- fmap :: (a -> b) ->  Parser a -> Parser b
@@ -39,9 +39,10 @@ instance Monad Parser where
             Left s -> Left s
             Right (a, out) -> runParser (a2pb a) out
         )
+
 instance Alternative Parser where
     -- empty :: Parser a
-    empty = P (const (Left ""))
+    empty = P (const (Left EmptyInput))
     -- (<|>) :: Parser a -> Parser a -> Parser a
     p <|> q = P (
         \input -> case runParser p input of
@@ -49,13 +50,15 @@ instance Alternative Parser where
             Right (a, out) -> Right (a, out)
         )
 
-runParser :: Parser a -> String -> Either String (a, String)
+data ParseError = EmptyInput | MakeSymbolError MakeSymbolError
+
+runParser :: Parser a -> String -> Either ParseError (a, String)
 runParser (P p) = p
 
 item :: Parser Char
 item = P (
     \case
-        [] -> Left "input: Empty String"
+        [] -> Left EmptyInput
         (x:xs) -> Right (x, xs)
     )
 
@@ -92,10 +95,10 @@ string (x:xs) = do
 parseString :: String -> Parser String
 parseString ss = token (string ss)
 
-smbl :: (Char -> Either SymbolError Symbol) -> String -> Either String (Symbol, String)
-smbl _ [] = Left "input: Empty String"
+smbl :: (Char -> Either MakeSymbolError Symbol) -> (String -> Either ParseError (Symbol, String))
+smbl _ [] = Left EmptyInput
 smbl f (x:xs) = case f x of
-    Left err -> Left (show err) 
+    Left err -> Left (MakeSymbolError err)
     Right s -> Right (s, xs)
 
 -- Parser Expression => P (String -> [(Expression, String)])
