@@ -14,9 +14,9 @@ evalLsystem a ss n = do
     rules <- mapM parseRule ss
     let drs = fromList rules
     pure $ nExpansion axiom drs n
-  where
-    parseRule :: String -> Either ParseError DisplaceRule
-    parseRule s = fst <$> runParser parseDisplaceRule s
+    where
+        parseRule :: String -> Either ParseError DisplaceRule
+        parseRule s = fst <$> runParser parseDisplaceRule s
 
 execLsystem :: Expression -> Angle -> Pos -> [Pos]
 execLsystem = getPoss 
